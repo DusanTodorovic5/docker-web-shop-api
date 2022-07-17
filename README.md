@@ -1,6 +1,6 @@
 # Web Shop API in Python using Docker
 
-Web shop api made in Python Flask using Docker Swarm. How to run.
+Web shop api made in Python Flask using Docker Swarm. [How to run](#Runing-the-server).
 
 There are 3 types of accounts
  - admin
