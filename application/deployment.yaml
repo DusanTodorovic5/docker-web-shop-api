@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  database:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+  adminer:
+    image: adminer
+    ports:
+      - 8081:8080
+  storageMigration:
+    image: storagemigration
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+#    depends_on:
+#      database:
+#        condition: service_healthy
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+  buyer:
+    image: buyer
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    depends_on:
+      - databaseMigration
+    ports:
+      - 5001:5001
+  daemon:
+    image: daemon
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    depends_on:
+      - databaseMigration
+  storekeeper:
+    image: storekeeper
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    depends_on:
+      - databaseMigration
+    ports:
+      - 5002:5002
+  admin:
+    image: admin
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    depends_on:
+      - databaseMigration
+    ports:
+      - 5003:5003

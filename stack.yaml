@@ -1,0 +1,155 @@
+version: '3'
+
+services:
+
+  adminer:
+    image: adminer
+    ports:
+      - 8080:8080
+    networks:
+      - adminerAuthenticationNetwork
+      - adminerStoreNetwork
+
+  authenticationDatabase:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+    networks:
+      - authenticationNetwork
+      - adminerAuthenticationNetwork
+    volumes:
+      - authenticationVolume:/var/lib/mysql
+
+  authenticationDBMigration:
+    image: authdbmigration
+    environment:
+      - DATABASE_URL=authenticationDatabase
+    networks:
+      - authenticationNetwork
+
+  authenticationContainer:
+    image: authentication
+    environment:
+      - DATABASE_URL=authenticationDatabase
+    ports:
+      - 5000:5000
+    networks:
+      - authenticationNetwork
+
+  database:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+    ports:
+      - 3307:3306
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 10s
+      retries: 10
+    networks:
+      - buyerNetwork
+      - daemonNetwork
+      - adminNetwork
+      - adminerStoreNetwork
+    volumes:
+      - storeVolume:/var/lib/mysql
+
+  databaseMigration:
+    image: storagemigration
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    networks:
+      - buyerNetwork
+      - daemonNetwork
+      - adminNetwork
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - redisDaemonNetwork
+      - redisStorekeeperNetwork
+
+  buyer:
+    image: buyer
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    ports:
+      - 5001:5001
+    networks:
+      - buyerNetwork
+    deploy:
+      replicas: 3
+
+  daemon:
+    image: daemon
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    networks:
+      - daemonNetwork
+      - redisDaemonNetwork
+
+  storekeeper:
+    image: storekeeper
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    ports:
+      - 5002:5002
+    networks:
+      - storekeeperNetwork
+      - redisStorekeeperNetwork
+    deploy:
+      replicas: 3
+
+  admin:
+    image: admin
+    environment:
+      - DATABASE_URL=database
+      - REDIS_PORT=redis
+    ports:
+      - 5003:5003
+    networks:
+      - adminNetwork
+
+networks:
+  buyerNetwork:
+     driver: overlay
+
+  storekeeperNetwork:
+     driver: overlay
+
+  adminNetwork:
+     driver: overlay
+
+  daemonNetwork:
+     driver: overlay
+
+  authenticationNetwork:
+     driver: overlay
+
+  redisDaemonNetwork:
+     driver: overlay
+
+  redisStorekeeperNetwork:
+     driver: overlay
+
+  adminerAuthenticationNetwork:
+     driver: overlay
+
+  adminerStoreNetwork:
+     driver: overlay
+
+volumes:
+
+  authenticationVolume:
+
+  storeVolume:
