@@ -1,6 +1,6 @@
 # Web Shop API in Python using Docker
 
-Web shop api made in Python Flask using Docker Swarm. [How to run](#Runing-the-server).
+Web shop API made in Python Flask using Docker Swarm. [How to run](#Runing-the-server).
 
 There are 3 types of accounts
  - admin
@@ -50,7 +50,7 @@ Storekeeper can upload a file containing new products, thus adding products to d
         }
         ```
  - Storekeeper - Running on port 5001
-    - /update [POST] - Request contains file like this
+    - /update [POST] - Request contains [file like this](https://github.com/DusanTodorovic5/docker-web-shop-api/blob/main/application/testing/temp.csv)
  - Daemon - Collecting updates from storekeeper in redis and updates database
  - Customer - Running on port 5003
     - /search?name=<PRODUCT_NAME>&category=<CATEGORY_NAME> [GET]
