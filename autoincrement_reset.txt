@@ -1,0 +1,35 @@
+##########################   STORAGE BAZA CLEAR  #######################################
+
+DELETE FROM product_categories;
+DELETE FROM product_orders;
+DELETE FROM categories;
+DELETE FROM orders;
+DELETE FROM products;
+ALTER TABLE categories AUTO_INCREMENT = 0;
+ALTER TABLE orders AUTO_INCREMENT = 0;
+ALTER TABLE product_categories AUTO_INCREMENT = 0;
+ALTER TABLE product_orders AUTO_INCREMENT = 0;
+ALTER TABLE products AUTO_INCREMENT = 0;
+
+	level 0: 
+python main.py --type level0 --with-authentication --authentication-address http://127.0.0.1:5000 --customer-address http://127.0.0.1:5001 --warehouse-address http://127.0.0.1:5002
+
+	level 1:
+python main.py --type level1 --with-authentication --authentication-address http://127.0.0.1:5000 --customer-address http://127.0.0.1:5001 --warehouse-address http://127.0.0.1:5002
+
+	level 2:
+python main.py --type level2 --with-authentication --authentication-address http://127.0.0.1:5000 --customer-address http://127.0.0.1:5001 --warehouse-address http://127.0.0.1:5002
+
+	level 3:
+python main.py --type level3 --with-authentication --authentication-address http://127.0.0.1:5000 --customer-address http://127.0.0.1:5001 --warehouse-address http://127.0.0.1:5002 --administrator-address http://127.0.0.1:5003
+
+	ALL:
+ python main.py --type all --with-authentication --authentication-address http://127.0.0.1:5000 --jwt-secret JWTSecretDevKey --roles-field roles --administrator-role 1 --customer-role 2 --warehouse-role 3 --customer-address http://127.0.0.1:5001 --warehouse-address http://127.0.0.1:5002 --administrator-address http://127.0.0.1:5003
+	auth:
+python main.py --type authentication --authentication-address http://127.0.0.1:5000 --jwt-secret JWTSecretDevKey --roles-field roles --administrator-role 1 --customer-role 2 --warehouse-role 3
+
+
+docker swarm init --advertise-addr 127.0.0.1
+docker stack deploy --compose-file <putanju do stack.yaml> aplikacija
+docker swarm leave --force
+//proveri docker service ls
